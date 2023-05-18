@@ -3,29 +3,16 @@
 {-# LANGUAGE MultiWayIf #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE UnicodeSyntax #-}
-
 {-# HLINT ignore "Use <$>" #-}
 {-# HLINT ignore "Use fmap" #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-{-# LANGUAGE BlockArguments #-}
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE MultiWayIf #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE UnicodeSyntax #-}
-
-{-# HLINT ignore "Use <$>" #-}
-{-# HLINT ignore "Use fmap" #-}
-{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
-import Control.Applicative (Alternative ((<|>)), liftA2)
 import Control.Arrow (Arrow (first, second))
-import Control.Monad (ap, guard, join, liftM, liftM2, replicateM, forM, (>=>))
+import Control.Monad (ap, forM, join, liftM, (>=>))
 import Control.Monad.Identity (Identity)
 import Data.List (nub)
 import Data.Maybe (fromJust)
-import Data.Tuple (swap)
 import Data.Unique (hashUnique, newUnique)
-import Data.Function (on)
 
 -------------
 --- State ---
@@ -137,29 +124,18 @@ s γⁿ (Absⁿ λⁿ) = do
 ----------------
 
 subterms :: Λ -> [Λ]
-subterms = nub . helper
+subterms λ = λ : (directSubterms λ >>= subterms)
   where
-    helper λ@(Var x) = [λ]
-    helper λ@(App λ₁ λ₂) = [λ₁, λ₂] >>= helper
-    helper λ@(Abs x λ₁) = helper λ₁
+    directSubterms :: Λ -> [Λ]
+    directSubterms (Var _) = []
+    directSubterms (App λ₁ λ₂) = [λ₁, λ₂]
+    directSubterms (Abs _ λ₁) = [λ₁]
 
------------
---- SED ---
------------
+(≼) :: Λ -> Λ -> Bool
+λ₁ ≼ λ₂ = λ₁ `elem` subterms λ₂
 
-sed :: (Variable, Variable) -> Λ -> Λ
-sed (x, y) (Var z) =
-  Var $
-    if z == x
-      then y
-      else z
-sed (x, y) (App λ₁ λ₂) =
-  App (sed (x, y) λ₁) (sed (x, y) λ₂)
-sed (x, y) (Abs z λ) =
-  Abs z $
-    if z == x
-      then λ
-      else sed (x, y) λ
+-- >>> (Var "x") ≼ (Abs "x" (App (Var "x") (Var "y")))
+-- True
 
 --------------------------
 --- Curry Substitution ---
@@ -186,15 +162,57 @@ csub (x, m) λ@(App λ₁ λ₂) = do
   return $ App λ'₁ λ'₂
 csub (x, m) λ@(Abs y λ₁) = do
   new <- untilM (`notElem` (nub $ [m, λ] >>= fv)) (genSym "x")
-  λ' <- (csub (y, Var new) >=> csub (x, λ₁)) m
-  return $ Abs new λ'
+  λ'₁ <- (csub (y, Var new) >=> csub (x, m)) λ₁
+  return $ Abs new λ'₁
 
 -- >>> csub ("x", Abs "x" (Var "z")) $ Abs "y" (Var "x")
--- Abs "x1" (Abs "x2" (Var "x1"))
+-- Abs "x1" (Abs "x" (Var "z"))
+
+-----------------------
+--- Λⁿ Substitution ---
+-----------------------
+
+(↑) :: (Index, Index) -> Λⁿ -> Λⁿ
+(c, d) ↑ λⁿ@(Varⁿ k) =
+  Varⁿ $
+    if k < c
+      then k
+      else k + d
+(c, d) ↑ λⁿ@(Appⁿ λⁿ₁ λⁿ₂) =
+  Appⁿ ((c, d) ↑ λⁿ₁) ((c, d) ↑ λⁿ₂)
+(c, d) ↑ λⁿ@(Absⁿ λⁿ₁) =
+  Absⁿ ((succ c, d) ↑ λⁿ₁)
+
+nsub :: (Index, Λⁿ) -> Λⁿ -> Λⁿ
+nsub (k, n) λⁿ@(Varⁿ i) =
+  if i == k
+    then n
+    else λⁿ
+nsub (k, n) λⁿ@(Appⁿ λⁿ₁ λⁿ₂) =
+  Appⁿ (nsub (k, n) λⁿ₁) (nsub (k, n) λⁿ₂)
+nsub (k, n) λⁿ@(Absⁿ λⁿ₁) =
+  Absⁿ (nsub (succ k, (0, 1) ↑ n) λⁿ₁)
+
+-- >>> nsub (0, (Varⁿ 1)) (Appⁿ (Varⁿ 0) (Absⁿ (Appⁿ (Varⁿ 0) (Varⁿ 1))))
+-- Appⁿ (Varⁿ 1) (Absⁿ (Appⁿ (Varⁿ 0) (Varⁿ 2)))
 
 -----------
 --- =α= ---
 -----------
+
+sed :: (Variable, Variable) -> Λ -> Λ
+sed (x, y) (Var z) =
+  Var $
+    if z == x
+      then y
+      else z
+sed (x, y) (App λ₁ λ₂) =
+  App (sed (x, y) λ₁) (sed (x, y) λ₂)
+sed (x, y) (Abs z λ) =
+  Abs z $
+    if z == x
+      then λ
+      else sed (x, y) λ
 
 type Match = (Variable, Variable)
 type Matches = [Match]
@@ -239,7 +257,7 @@ type Matches = [Match]
 
 fv :: Λ -> [Variable]
 fv (Var x) = [x]
-fv (App λ₁ λ₂) = nub $ fv λ₁ ++ fv λ₂
+fv (App λ₁ λ₂) = nub $ [λ₁, λ₂] >>= fv
 fv (Abs x λ) = filter (/= x) $ fv λ
 
 --------------------
