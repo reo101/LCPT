@@ -1,0 +1,308 @@
+%! TEX program = lualatex
+%lualatex:
+\documentclass{article}
+\usepackage{amsfonts}
+\usepackage{amsmath, amssymb}
+\usepackage{commath}
+\usepackage{xargs}
+\usepackage{xstring}
+\usepackage{mathtools}
+\usepackage{xfp}
+\usepackage{tikz}
+\usetikzlibrary{backgrounds}
+
+\usepackage{geometry}
+\geometry{legalpaper, portrait, left=30mm, right=30mm, top=20mm, bottom=20mm}
+\usepackage{nopageno}
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{bulgarian}
+\setotherlanguage{english}
+\newfontfamily\cyrillicfont[Script=Cyrillic]{Linux Libertine O}
+
+\usepackage{graphicx}
+\graphicspath{ {./} }
+
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta}
+
+\directlua{
+    function takovata(x)
+        return (x - 2)/math.sqrt(x*x + 1)
+    end
+}
+\pgfmathdeclarefunction{Takovata}{1}{%
+  \edef\pgfmathresult{%
+     \directlua{tex.print("" .. takovata(#1))}%
+   }%
+}
+
+\newcommand*{\limi}[2][\infty]{
+    \lim\limits_{#2\to#1}
+}
+%\newcommand*{\sumi}[1][_{i=0}]{
+    %\sum\limits_{#2}^{#1}
+%}
+\newlength{\leftstackrelawd}
+\newlength{\leftstackrelbwd}
+\def\leftstackrel#1#2{\settowidth{\leftstackrelawd}%
+{${{}^{#1}}$}\settowidth{\leftstackrelbwd}{$#2$}%
+\addtolength{\leftstackrelawd}{-\leftstackrelbwd}%
+\leavevmode\ifthenelse{\lengthtest{\leftstackrelawd>0pt}}%
+{\kern-.5\leftstackrelawd}{}\mathrel{\mathop{#2}\limits^{#1}}}
+\newcommand{\leftoverinfo}[2]{
+    \leftstackrel{\substack{#1}}{#2}
+}
+\newcommand{\overinfo}[2]{
+    \stackrel{\substack{#1}}{#2}
+}
+\newcommand{\dx}[1][x]{
+    \mathrm{d}#1
+}
+\newcommand{\br}[1]{
+    \left(#1\right)
+}
+\newcommand{\conv}[2][\infty]{
+    \underset{#2\to#1}{\longrightarrow}
+}
+\newcommand{\smallo}[1]{
+    o\left(#1\right)
+}
+\newcommand{\doubleplus}{
+    +\kern-1.3ex+\kern0.8ex
+}
+\newcommand{\der}[1]{
+    {\left(#1\right)}'
+}
+\newcommand{\dilim}[2]{
+    \Biggr|_{#1}^{#2}
+}
+% \newcommand{\Task}[2]{
+%     \setcounter{section}{\fpeval{#1-1}}
+%     \setcounter{subsection}{\fpeval{#2-1}}
+%     \section{Задача}
+% }
+\newcommand{\Task}[1]{
+    \def\taskargs{#1}
+    \StrBefore{\taskargs}{,}[\tasksection]
+    \StrBehind{\taskargs}{,}[\tasksubsection]
+    \setcounter{section}{\fpeval{\tasksection}}
+    \setcounter{subsection}{\fpeval{\tasksubsection-1}}
+    \subsection{Задача}
+}
+\newcommand{\HGamma}{
+    \overline{\Gamma}
+}
+\newcommand{\VGamma}{
+    % \mathbb{\Gamma}
+    % \Delta
+    \mathrm{I}\kern-2pt\Gamma%\kern0.0pt
+}
+\newcommand{\iif}{
+    \Longleftrightarrow
+}
+\renewcommand{\phi}{
+    \varphi
+}
+%\renewcommand{\thesection}{\hspace{1cm}\arabic{section}.}
+%\renewcommand{\thesubsection}{\hspace{2cm}\arabic{section}.\arabic{subsection}.}
+\begin{document}
+
+\title{Домашно по λСТД}
+\author{Павел Атанасов, ФН №62555}
+\date{}
+\maketitle
+
+\Task{1,3}
+
+Да се покаже, че \(\forall_{l_{1},l_{2}} len(l_{1} \doubleplus l_{2}) = len(l_{1}) + len(l_{2})\)
+
+Индукция по \(l_{1}\):
+
+База: \(l_{1} = []\):
+\begin{align*}
+    len([] \doubleplus l_{2}) &\leftoverinfo{1.5.1}{=} len(l_{2}) \\
+    &= 0 + len(l_{2}) \\
+    &\leftoverinfo{1.4.1}{=} len([]) + len(l_{2})
+\end{align*}
+
+ИП: Нека е вярно за \(l_{1} = l\)
+
+Стъпка: Нека \(l_{1} = (n:l)\):
+\begin{align*}
+    len((n:l) \doubleplus l_{2}) &\leftoverinfo{1.5.2}{=} len(n:(l \doubleplus l_{2})) \\
+    &\leftoverinfo{1.4.2}{=} 1 + len(l + l_{2}) \\
+    &\leftoverinfo{\text{ИП}}{=} 1 + len(l) + len(l_{2}) \\
+    &\leftoverinfo{1.4.2}{=} len((n:l)) + len(l_{2})
+\end{align*}
+
+\Task{1,5}
+
+\begin{align*}
+    \Gamma &: \mathcal{P}\left(U\right) \to \mathcal{P}\left(U\right) \\
+    \VGamma &: \mathcal{P}\left(U\right) \to \mathcal{P}\left(U\right) \to \mathcal{P}\left(U\right) \\
+    \VGamma\left(A\right)\left(X\right) &:= A \cup \Gamma\left(X\right) \\
+    \HGamma &: \mathcal{P}\left(U\right) \to \mathcal{P}\left(U\right) \\
+    \HGamma\left(D\right) &:= \mu_{\VGamma\left(D\right)}
+\end{align*}
+
+Нека:
+
+\[
+    \phi_{\Delta} := \{X \ |\  \Delta\left(X\right) = X\}
+\]
+
+Демек:
+
+\[
+    \forall \Delta: \mu_{\Delta} \in \phi_{\Delta}
+\]
+
+Горните дефиниции важат и за 1.6
+
+\begin{align*}
+    \VGamma \text{is monotonous} &\iif A \subseteq B \implies \VGamma\left(A\right) \subseteq \VGamma\left(B\right) \\
+    \mu_{\VGamma} &= ?
+\end{align*}
+
+Нека \(A \subseteq B\). Тогава:
+
+Знаем, че \(\HGamma\) е фамилия от монотонни оператори, т.е. \(\forall A: \HGamma\left(A\right)\) е монотонен оператор.
+
+От Кнастер-Тарски(КТ):
+
+\[
+    \mu_{\Gamma} = \bigcap \{X \subseteq U \ |\  \Gamma\left(X\right) \subseteq X\}
+\]
+
+Демек, ако \(\exists X: \HGamma\left(A\right)\left(X\right) \subseteq X\), т.е. \(X\) е "слаба неподвижна"/пренеподвижна точка, то тогава \(\mu_{\HGamma\left(A\right)} \subseteq X\), защото \(\mu_{\Gamma}\) е сечението на всички такива пренеподвижни точки.
+
+Разглеждаме:
+
+\begin{align*}
+    \HGamma\left(A\right)\left(\mu_{\HGamma\left(B\right)}\right)
+    &= A \cup \Gamma\left(\mu_{\HGamma\left(B\right)}\right) \\
+    &\leftoverinfo{A \subseteq B}{\subseteq} B \cup \Gamma\left(\mu_{\HGamma\left(B\right)}\right) \\
+    &= \HGamma\left(B\right)\left(\mu_{\HGamma\left(B\right)}\right) \\
+    &\leftoverinfo{\mu_{\HGamma\left(B\right)} \text{is a fixpoint}}{=} \mu_{\HGamma\left(B\right)} \\
+    &\implies \HGamma\left(A\right)\left(\mu_{\HGamma\left(B\right)}\right) \subseteq \mu_{\HGamma\left(B\right)} \\
+    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\HGamma\left(A\right)} \subseteq \mu_{\HGamma\left(B\right)} \\
+    &\leftoverinfo{def}{\implies} \VGamma\left(A\right) \subseteq \VGamma\left(B\right)
+\end{align*}
+
+Следователно \(A \subseteq B \implies \VGamma\left(A\right) \subseteq \VGamma\left(B\right)\)
+
+Нека сега намерим \(\mu_{\VGamma}\):
+
+Разглеждаме:
+
+% \begin{align*}
+%     \HGamma\left(\mu_{\Gamma}\right) &= \mu_{\VGamma\(left\mu_{\Gamma}\right)} \\
+%     \VGamma\left(\mu_{\Gamma}\right)(X) &= \mu_{\Gamma} \cup \Gamma\left(X\right) \\
+% \end{align*}
+
+Нека \(X \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\):
+
+\begin{align*}
+    \HGamma\left(\mu_{\Gamma}\right)\left(X\right)
+    &\leftoverinfo{def}{=} \mu_{\Gamma} \cup \Gamma\left(X\right) \\
+    &\leftoverinfo{fixpoint}{=} X \\
+    &\implies \mu_{\Gamma} \subseteq X
+\end{align*}
+
+Обаче \(\mu_{\Gamma} \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\), понеже:
+
+\begin{align*}
+    \HGamma\left(\mu_{\Gamma}\right)\left(\mu_{\Gamma}\right)
+    &= \mu_{\Gamma} \cup \Gamma\left(\mu_{\Gamma}\right) \\
+    &\leftoverinfo{fixpoint}{=} \mu_{\Gamma} \cup \mu_{\Gamma} \\
+    &\leftoverinfo{set\ theory}{=} \mu_{\Gamma}
+\end{align*}
+
+Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\), хем е \(\subseteq X, \forall X \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\).
+
+Следователно \(\mu_{\Gamma} = \mu_{\HGamma\left(\mu_{\Gamma}\right)}\).
+
+Разглеждаме (ново) \(X \in \phi_{\VGamma}\):
+
+Искаме \(\VGamma\left(X\right) = X \implies \mu_{\Gamma} \subseteq X\)
+
+\begin{align*}
+    X
+    &= \VGamma\left(X\right) \\
+    &\leftoverinfo{def}{=} \mu_{\HGamma\left(X\right)} \\
+    &\leftoverinfo{\exists Y\\def}{=} X \cup \Gamma\left(Y\right) \\
+    &\leftoverinfo{fixpoint} = Y \\
+    &\implies X = Y \\
+    &\implies \Gamma\left(Y\right) \subseteq Y \\
+    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\Gamma} \subseteq Y \\
+    &\leftoverinfo{Y = X}{\implies} \mu_{\Gamma} \subseteq X
+\end{align*}
+
+Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\VGamma}\), хем е \(\subseteq X, \forall X \in \phi_{\VGamma}\).
+
+Следователно \(\mu_{\Gamma} = \mu_{\VGamma}\).
+
+\Task{1,6}
+
+\begin{align*}
+    \HGamma\left(\HGamma\left(D\right)\right) &\leftoverinfo{?}{=} \HGamma\left(D\right) \\
+\end{align*}
+
+Разглеждаме с цел \(\HGamma\left(D\right) \subseteq \HGamma\left(\HGamma\left(D\right)\right)\):
+
+\begin{align*}
+    \VGamma\left(D\right)(\HGamma\left(D\right))
+    &:= D \cup \Gamma(\HGamma\left(D\right)) \\
+    &\leftoverinfo{set\ theory}{\implies} D \subseteq \VGamma\left(D\right)(\HGamma\left(D\right)) \overinfo{fixpoint}{=} \HGamma\left(D\right) \\
+    &\implies D \subseteq \VGamma\left(D\right) \\
+    &\leftoverinfo{\HGamma\ monotonous}{\implies} \HGamma\left(D\right) \subseteq \HGamma\left(\HGamma\left(D\right)\right)
+\end{align*}
+
+Разглеждаме с цел \(\HGamma\left(\HGamma\left(D\right)\right) \subseteq \HGamma\left(D\right)\):
+
+\begin{align*}
+    \VGamma\left(\HGamma\left(D\right)\right)\left(\HGamma\left(D\right)\right) &\overinfo{def}{=} \HGamma\left(D\right) \cup \Gamma\left(\HGamma\left(D\right)\right) \\
+    \Gamma\left(\HGamma\left(D\right)\right) &\subseteq D \cup \Gamma\left(\HGamma\left(D\right)\right) \\
+    &\leftoverinfo{def}{=} \VGamma\left(D\right)\left(\HGamma\left(D\right)\right) \\
+    &\leftoverinfo{fixpoint}{=} \HGamma\left(D\right) \\
+    &\implies \HGamma\left(D\right) \cup \Gamma\left(\HGamma\left(D\right)\right) \overinfo{\subseteq}{=} \HGamma\left(D\right) \\
+    &\implies \VGamma\left(\HGamma\left(D\right)\right)\left(\HGamma\left(D\right)\right) = \HGamma\left(D\right) \\
+    &\leftoverinfo{def}{\implies} \HGamma\left(D\right) \in \phi_{\VGamma\left(\HGamma\left(D\right)\right)} \\
+    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\VGamma\left(\HGamma\left(D\right)\right)} \subseteq \HGamma\left(D\right) \\
+    &\leftoverinfo{def}{=} \HGamma\left(\HGamma\left(D\right)\right) \subseteq \HGamma\left(D\right)
+\end{align*}
+
+\Task{2,12}
+
+Да се докаже, че релацията \(\leq\) е частична наредба, т.е. че е рефлексивна, транзитивна и антисиметрична. Упътване: покажете, че \(M \leq N \Longleftrightarrow Sub\left(M\right) \subseteq Sub\left(N\right)\)\dots
+
+"\(\implies\)" \(M \leq N\): Индукция по \(N\)
+\begin{enumerate}
+    \item \(N \equiv x \in V\):
+        \begin{align*}
+            M \leq x &\implies M \in Sub\left(x\right) = \{x\} \\
+            &\implies Sub\left(M\right) = Sub\left(N\right)
+        \end{align*}
+    \item \(N \equiv N_{1}N_{2}\):
+        \(M \leq N_{1}N_{2} \implies M \in Sub(N_{1}N_{2}) = \{N_{1}N_{2}\} \cup Sub(N_{1)} \cup Sub(N_{2})\)
+        \begin{enumerate}
+            \item \(M \equiv N_{1}N_{2} \implies Sub\left(M\right) = Sub\left(N\right)\)
+            \item \(M \in Sub(N_{1}) \overinfo{ИП}{\implies} Sub\left(M\right) \subseteq Sub(N_{1}) \subseteq Sub\left(N\right)\)
+            \item \(M \in Sub(N_{2}) \overinfo{ИП}{\implies} Sub\left(M\right) \subseteq Sub(N_{2}) \subseteq Sub\left(N\right)\)
+        \end{enumerate}
+    \item \(N \equiv \lambda_{x}N_{1}\):
+        \(M \leq \lambda_{x}N_{1} \implies M \in \{\lambda_{x}N_{1}\} \cup Sub(N_{1})\)
+        \begin{enumerate}
+            \item \(M \equiv \lambda_{x}N_{1} \implies Sub\left(M\right) = Sub\left(N\right)\)
+            \item \(M \in Sub(N_{1}) \overinfo{ИП}{\implies} Sub\left(M\right) \subseteq Sub(N_{1}) \subseteq Sub\left(N\right)\)
+        \end{enumerate}
+\end{enumerate}
+
+"\(\impliedby\)" \(Sub\left(M\right) \subseteq Sub\left(N\right)\): Индукция по \(M\)
+\begin{align*}
+    M \in Sub\left(M\right) &\overinfo{\subseteq}{\implies} M \in Sub\left(N\right) \\
+    &\overinfo{def}{\implies} M \leq N
+\end{align*}
+
+\end{document}

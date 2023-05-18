@@ -1,0 +1,2 @@
+- `nix develop` - Enter development shell
+- `lualatex tasks.tex` - Compile LaTeX

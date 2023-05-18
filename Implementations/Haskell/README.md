@@ -1,0 +1,2 @@
+- `nix develop` - Enter development shell
+- `ghci tasks.hs` - Enter GHCI REPL with tasks
