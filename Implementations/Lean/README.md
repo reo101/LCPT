@@ -1,1 +1,1 @@
-- `nix shell .#lean-dev` - Enter development shell
+- `nix develop` - Enter development shell
