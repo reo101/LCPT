@@ -8,14 +8,24 @@
 {-# HLINT ignore "Use fmap" #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
-import Control.Applicative (Alternative ((<|>)))
+{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE InstanceSigs #-}
+{-# LANGUAGE MultiWayIf #-}
+{-# LANGUAGE TupleSections #-}
+{-# LANGUAGE UnicodeSyntax #-}
+
+{-# HLINT ignore "Use <$>" #-}
+{-# HLINT ignore "Use fmap" #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+import Control.Applicative (Alternative ((<|>)), liftA2)
 import Control.Arrow (Arrow (first, second))
-import Control.Monad (ap, guard, join, liftM, liftM2, replicateM, forM)
+import Control.Monad (ap, guard, join, liftM, liftM2, replicateM, forM, (>=>))
 import Control.Monad.Identity (Identity)
 import Data.List (nub)
 import Data.Maybe (fromJust)
 import Data.Tuple (swap)
 import Data.Unique (hashUnique, newUnique)
+import Data.Function (on)
 
 -------------
 --- State ---
@@ -122,6 +132,17 @@ s γⁿ (Absⁿ λⁿ) = do
   λ <- s γⁿ' λⁿ
   return $ Abs new λ
 
+----------------
+--- Subterms ---
+----------------
+
+subterms :: Λ -> [Λ]
+subterms = nub . helper
+  where
+    helper λ@(Var x) = [λ]
+    helper λ@(App λ₁ λ₂) = [λ₁, λ₂] >>= helper
+    helper λ@(Abs x λ₁) = helper λ₁
+
 -----------
 --- SED ---
 -----------
@@ -139,6 +160,37 @@ sed (x, y) (Abs z λ) =
     if z == x
       then λ
       else sed (x, y) λ
+
+--------------------------
+--- Curry Substitution ---
+--------------------------
+
+untilM :: (Monad m) => (a -> Bool) -> m a -> m a
+untilM p m = go
+  where
+    go = do
+      x <- m
+      if p x
+        then return x
+        else go
+
+csub :: (Variable, Λ) -> Λ -> IO Λ
+csub (x, m) λ@(Var z) = do
+  return $
+    if z == x
+      then m
+      else λ
+csub (x, m) λ@(App λ₁ λ₂) = do
+  λ'₁ <- csub (x, m) λ₁
+  λ'₂ <- csub (x, m) λ₂
+  return $ App λ'₁ λ'₂
+csub (x, m) λ@(Abs y λ₁) = do
+  new <- untilM (`notElem` (nub $ [m, λ] >>= fv)) (genSym "x")
+  λ' <- (csub (y, Var new) >=> csub (x, λ₁)) m
+  return $ Abs new λ'
+
+-- >>> csub ("x", Abs "x" (Var "z")) $ Abs "y" (Var "x")
+-- Abs "x1" (Abs "x2" (Var "x1"))
 
 -----------
 --- =α= ---
