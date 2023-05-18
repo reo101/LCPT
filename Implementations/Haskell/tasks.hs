@@ -122,23 +122,23 @@ s γⁿ (Absⁿ λⁿ) = do
   λ <- s γⁿ' λⁿ
   return $ Abs new λ
 
------------------
---- Curry SED ---
------------------
+-----------
+--- SED ---
+-----------
 
-csed :: (Variable, Variable) -> Λ -> Λ
-csed (x, y) (Var z) =
+sed :: (Variable, Variable) -> Λ -> Λ
+sed (x, y) (Var z) =
   Var $
     if z == x
       then y
       else z
-csed (x, y) (App λ₁ λ₂) =
-  App (csed (x, y) λ₁) (csed (x, y) λ₂)
-csed (x, y) (Abs z λ) =
+sed (x, y) (App λ₁ λ₂) =
+  App (sed (x, y) λ₁) (sed (x, y) λ₂)
+sed (x, y) (Abs z λ) =
   Abs z $
     if z == x
       then λ
-      else csed (x, y) λ
+      else sed (x, y) λ
 
 -----------
 --- =α= ---
@@ -173,8 +173,8 @@ type Matches = [Match]
       return $ (&&) α₁ α₂
     αh (Abs x₁ λ₁) (Abs x₂ λ₂) = do
       new <- lift $ genSym "x"
-      let λ₁' = csed (x₁, new) λ₁
-      let λ₂' = csed (x₂, new) λ₂
+      let λ₁' = sed (x₁, new) λ₁
+      let λ₂' = sed (x₂, new) λ₂
       -- ... since this handles the locals
       modify ((new, new) :)
       αh λ₁' λ₂'
