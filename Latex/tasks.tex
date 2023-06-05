@@ -161,87 +161,97 @@
 Горните дефиниции важат и за 1.6
 
 \begin{align*}
-    \VGamma \text{is monotonous} &\iif A \subseteq B \implies \VGamma\left(A\right) \subseteq \VGamma\left(B\right) \\
-    \mu_{\VGamma} &= ?
+    \HGamma \text{is monotonous} &\iif A \subseteq B \implies \HGamma\left(A\right) \subseteq \HGamma\left(B\right) \\
+    \mu_{\HGamma} &= ?
 \end{align*}
 
 Нека \(A \subseteq B\). Тогава:
 
-Знаем, че \(\HGamma\) е фамилия от монотонни оператори, т.е. \(\forall A: \HGamma\left(A\right)\) е монотонен оператор.
+Знаем, че \(\VGamma\) е фамилия от монотонни оператори, т.е. \(\forall A: \VGamma\left(A\right)\) е монотонен оператор.
 
 От Кнастер-Тарски(КТ):
 
 \[
-    \mu_{\Gamma} = \bigcap \{X \subseteq U \ |\  \Gamma\left(X\right) \subseteq X\}
+    \mu_{\Delta} = \bigcap \{X \subseteq U \ |\  \Delta\left(X\right) \subseteq X\}
 \]
 
-Демек, ако \(\exists X: \HGamma\left(A\right)\left(X\right) \subseteq X\), т.е. \(X\) е "слаба неподвижна"/пренеподвижна точка, то тогава \(\mu_{\HGamma\left(A\right)} \subseteq X\), защото \(\mu_{\Gamma}\) е сечението на всички такива пренеподвижни точки.
+Демек, ако \(\exists X: \VGamma\left(A\right)\left(X\right) \subseteq X\), т.е. \(X\) е "слаба неподвижна"/преднеподвижна точка, то тогава \(\mu_{\VGamma\left(A\right)} \subseteq X\), защото \(\mu_{\VGamma\left(A\right)}\) е сечението на всички такива преднеподвижни точки.
 
 Разглеждаме:
 
 \begin{align*}
-    \HGamma\left(A\right)\left(\mu_{\HGamma\left(B\right)}\right)
-    &= A \cup \Gamma\left(\mu_{\HGamma\left(B\right)}\right) \\
-    &\leftoverinfo{A \subseteq B}{\subseteq} B \cup \Gamma\left(\mu_{\HGamma\left(B\right)}\right) \\
-    &= \HGamma\left(B\right)\left(\mu_{\HGamma\left(B\right)}\right) \\
-    &\leftoverinfo{\mu_{\HGamma\left(B\right)} \text{is a fixpoint}}{=} \mu_{\HGamma\left(B\right)} \\
-    &\implies \HGamma\left(A\right)\left(\mu_{\HGamma\left(B\right)}\right) \subseteq \mu_{\HGamma\left(B\right)} \\
-    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\HGamma\left(A\right)} \subseteq \mu_{\HGamma\left(B\right)} \\
-    &\leftoverinfo{def}{\implies} \VGamma\left(A\right) \subseteq \VGamma\left(B\right)
+    \VGamma\left(A\right)\left(\mu_{\VGamma\left(B\right)}\right)
+    &= A \cup \Gamma\left(\mu_{\VGamma\left(B\right)}\right) \\
+    &\leftoverinfo{A \subseteq B}{\subseteq} B \cup \Gamma\left(\mu_{\VGamma\left(B\right)}\right) \\
+    &= \VGamma\left(B\right)\left(\mu_{\VGamma\left(B\right)}\right) \\
+    &\leftoverinfo{\mu_{\VGamma\left(B\right)} \text{is a fixpoint}}{=} \mu_{\VGamma\left(B\right)} \\
+    \implies \VGamma\left(A\right)\left(\mu_{\VGamma\left(B\right)}\right) &\subseteq \mu_{\VGamma\left(B\right)} \\
+    \leftoverinfo{\text{КТ}}{\implies} \mu_{\VGamma\left(A\right)} &\subseteq \mu_{\VGamma\left(B\right)} \\
+    \leftoverinfo{def}{\implies} \HGamma\left(A\right) &\subseteq \HGamma\left(B\right)
 \end{align*}
 
-Следователно \(A \subseteq B \implies \VGamma\left(A\right) \subseteq \VGamma\left(B\right)\)
+Следователно \(A \subseteq B \implies \HGamma\left(A\right) \subseteq \HGamma\left(B\right)\)
 
-Нека сега намерим \(\mu_{\VGamma}\):
+Нека сега намерим \(\mu_{\HGamma}\):
 
 Разглеждаме:
 
 % \begin{align*}
-%     \HGamma\left(\mu_{\Gamma}\right) &= \mu_{\VGamma\(left\mu_{\Gamma}\right)} \\
-%     \VGamma\left(\mu_{\Gamma}\right)(X) &= \mu_{\Gamma} \cup \Gamma\left(X\right) \\
+%     \VGamma\left(\mu_{\Gamma}\right) &= \mu_{\HGamma\(left\mu_{\Gamma}\right)} \\
+%     \HGamma\left(\mu_{\Gamma}\right)(X) &= \mu_{\Gamma} \cup \Gamma\left(X\right) \\
 % \end{align*}
 
-Нека \(X \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\):
+Нека \(X \in \phi_{\VGamma\left(\mu_{\Gamma}\right)}\):
 
 \begin{align*}
-    \HGamma\left(\mu_{\Gamma}\right)\left(X\right)
+    \VGamma\left(\mu_{\Gamma}\right)\left(X\right)
     &\leftoverinfo{def}{=} \mu_{\Gamma} \cup \Gamma\left(X\right) \\
-    &\leftoverinfo{fixpoint}{=} X \\
-    &\implies \mu_{\Gamma} \subseteq X
+    &\leftoverinfo{prefixpoint}{\subseteq} X \\
+    \implies \mu_{\Gamma} \cup \Gamma\left(X\right) &\subseteq X \\
+    \implies \mu_{\Gamma} &\subseteq X
 \end{align*}
 
-Обаче \(\mu_{\Gamma} \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\), понеже:
+Обаче \(\mu_{\Gamma} \in \phi_{\VGamma\left(\mu_{\Gamma}\right)}\), понеже:
 
 \begin{align*}
-    \HGamma\left(\mu_{\Gamma}\right)\left(\mu_{\Gamma}\right)
+    \VGamma\left(\mu_{\Gamma}\right)\left(\mu_{\Gamma}\right)
     &= \mu_{\Gamma} \cup \Gamma\left(\mu_{\Gamma}\right) \\
     &\leftoverinfo{fixpoint}{=} \mu_{\Gamma} \cup \mu_{\Gamma} \\
     &\leftoverinfo{set\ theory}{=} \mu_{\Gamma}
 \end{align*}
 
-Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\), хем е \(\subseteq X, \forall X \in \phi_{\HGamma\left(\mu_{\Gamma}\right)}\).
+Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\VGamma\left(\mu_{\Gamma}\right)}\), хем е \(\subseteq X, \forall X \in \phi_{\VGamma\left(\mu_{\Gamma}\right)}\).
 
-Следователно \(\mu_{\Gamma} = \mu_{\HGamma\left(\mu_{\Gamma}\right)}\).
+Следователно (по КТ) \(\mu_{\Gamma} = \mu_{\VGamma\left(\mu_{\Gamma}\right)}\).
 
-Разглеждаме (ново) \(X \in \phi_{\VGamma}\):
+Разглеждаме (ново) \(X \in \phi_{\HGamma}\):
 
-Искаме \(\VGamma\left(X\right) = X \implies \mu_{\Gamma} \subseteq X\)
+Ще извършим опит да покажем, че \(\HGamma\left(X\right) = X \implies \mu_{\Gamma} \subseteq X\):
+
+% \begin{align*}
+%     X
+%     &= \HGamma\left(X\right) \\
+%     &\leftoverinfo{def}{=} \mu_{\VGamma\left(X\right)} \\
+%     &\leftoverinfo{\exists Y\\def}{=} X \cup \Gamma\left(Y\right) \\
+%     &\leftoverinfo{fixpoint} = Y \\
+%     &\implies X = Y \\
+%     &\implies \Gamma\left(Y\right) \subseteq Y \\
+%     &\leftoverinfo{\text{КТ}}{\implies} \mu_{\Gamma} \subseteq Y \\
+%     &\leftoverinfo{Y = X}{\implies} \mu_{\Gamma} \subseteq X
+% \end{align*}
 
 \begin{align*}
     X
-    &= \VGamma\left(X\right) \\
-    &\leftoverinfo{def}{=} \mu_{\HGamma\left(X\right)} \\
-    &\leftoverinfo{\exists Y\\def}{=} X \cup \Gamma\left(Y\right) \\
-    &\leftoverinfo{fixpoint} = Y \\
-    &\implies X = Y \\
-    &\implies \Gamma\left(Y\right) \subseteq Y \\
-    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\Gamma} \subseteq Y \\
-    &\leftoverinfo{Y = X}{\implies} \mu_{\Gamma} \subseteq X
+    &= \HGamma\left(X\right) \\
+    &\leftoverinfo{def}{=} \mu_{\VGamma\left(X\right)} \\
+    &\leftoverinfo{def\\fixpoint}{=} X \cup \Gamma\left(X\right) \\
+    \implies \Gamma\left(X\right) &\subseteq X \\
+    \leftoverinfo{\text{KT}}{\implies} \mu_{\Gamma} &\subseteq X
 \end{align*}
 
-Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\VGamma}\), хем е \(\subseteq X, \forall X \in \phi_{\VGamma}\).
+Следователно \(\mu_{\Gamma}\) хем е \(\in \phi_{\HGamma}\), хем е \(\subseteq X, \forall X \in \phi_{\HGamma}\).
 
-Следователно \(\mu_{\Gamma} = \mu_{\VGamma}\).
+Следователно (по КТ) \(\mu_{\Gamma} = \mu_{\HGamma}\).
 
 \Task{1,6}
 
@@ -255,7 +265,7 @@
     \VGamma\left(D\right)(\HGamma\left(D\right))
     &:= D \cup \Gamma(\HGamma\left(D\right)) \\
     &\leftoverinfo{set\ theory}{\implies} D \subseteq \VGamma\left(D\right)(\HGamma\left(D\right)) \overinfo{fixpoint}{=} \HGamma\left(D\right) \\
-    &\implies D \subseteq \VGamma\left(D\right) \\
+    &\implies D \subseteq \HGamma\left(D\right) \\
     &\leftoverinfo{\HGamma\ monotonous}{\implies} \HGamma\left(D\right) \subseteq \HGamma\left(\HGamma\left(D\right)\right)
 \end{align*}
 
@@ -263,14 +273,14 @@
 
 \begin{align*}
     \VGamma\left(\HGamma\left(D\right)\right)\left(\HGamma\left(D\right)\right) &\overinfo{def}{=} \HGamma\left(D\right) \cup \Gamma\left(\HGamma\left(D\right)\right) \\
-    \Gamma\left(\HGamma\left(D\right)\right) &\subseteq D \cup \Gamma\left(\HGamma\left(D\right)\right) \\
+    \text{Обаче:\ } \Gamma\left(\HGamma\left(D\right)\right) &\subseteq D \cup \Gamma\left(\HGamma\left(D\right)\right) \\
     &\leftoverinfo{def}{=} \VGamma\left(D\right)\left(\HGamma\left(D\right)\right) \\
     &\leftoverinfo{fixpoint}{=} \HGamma\left(D\right) \\
-    &\implies \HGamma\left(D\right) \cup \Gamma\left(\HGamma\left(D\right)\right) \overinfo{\subseteq}{=} \HGamma\left(D\right) \\
-    &\implies \VGamma\left(\HGamma\left(D\right)\right)\left(\HGamma\left(D\right)\right) = \HGamma\left(D\right) \\
-    &\leftoverinfo{def}{\implies} \HGamma\left(D\right) \in \phi_{\VGamma\left(\HGamma\left(D\right)\right)} \\
-    &\leftoverinfo{\text{КТ}}{\implies} \mu_{\VGamma\left(\HGamma\left(D\right)\right)} \subseteq \HGamma\left(D\right) \\
-    &\leftoverinfo{def}{=} \HGamma\left(\HGamma\left(D\right)\right) \subseteq \HGamma\left(D\right)
+    \implies \HGamma\left(D\right) \cup \Gamma\left(\HGamma\left(D\right)\right) &\overinfo{\Gamma\left(\HGamma\left(D\right)\right)\subseteq\HGamma\left(D\right)}{=} \HGamma\left(D\right) \\
+    \implies \VGamma\left(\HGamma\left(D\right)\right)\left(\HGamma\left(D\right)\right) &= \HGamma\left(D\right) \\
+    \leftoverinfo{def}{\implies} \HGamma\left(D\right) &\in \phi_{\VGamma\left(\HGamma\left(D\right)\right)} \\
+    \leftoverinfo{\text{КТ}}{\implies} \mu_{\VGamma\left(\HGamma\left(D\right)\right)} &\subseteq \HGamma\left(D\right) \\
+    \leftoverinfo{def}{=} \HGamma\left(\HGamma\left(D\right)\right) &\subseteq \HGamma\left(D\right)
 \end{align*}
 
 \Task{2,12}
