@@ -24,7 +24,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
       leanPkgs = lean.packages.${system};
       pkg = leanPkgs.buildLeanPackage {
-        name = "Main";
+        name = "Utilities";
         src = ./src;
         fullSrc = ./.;
       };
