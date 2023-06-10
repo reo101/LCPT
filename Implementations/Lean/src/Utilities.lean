@@ -28,4 +28,4 @@ end Classical
 macro "⊥" : term => `(False)
 macro x:term:35 "∨ꜝ" y:term:35 : term => `(¬$x -> ¬$y -> ⊥)
 macro x:term:35 "∧ꜝ" y:term:35 : term => `(¬($x -> $y -> ⊥))
-macro "∃ꜝ " x:ident ", " b:term : term => `(¬(∀ $x, ¬$b))
+macro "∃ꜝ " x:ident ", " b:term:35 : term => `(¬(∀ $x, ¬$b))

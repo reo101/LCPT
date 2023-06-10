@@ -1,4 +1,4 @@
-import Util
+import Utilities
 
 section
 
@@ -9,51 +9,28 @@ variable (p : α → Prop)
 theorem dm1 : ¬(a ∧ b) ↔ (¬a ∨ ¬b) := by
   apply Iff.intro
   case mp =>
-    intro u
-    apply stab
-    intro v
-    apply @mp (a ∧ b) False
-    case f =>
-      exact u
-    case x =>
-      apply And.intro
-      case left =>
-        apply stab
-        intro w
-        apply @mp (¬a ∨ ¬b) False
-        case f =>
-          exact v
-        case x =>
-          apply Or.inl
-          exact w
-      case right =>
-        apply stab
-        intro w
-        apply @mp (¬a ∨ ¬b) False
-        case f =>
-          exact v
-        case x =>
-          apply Or.inr
-          exact w
+    intro hnavb
+    apply Classical.stab
+    intro hnnavnb
+    apply hnnavnb
+    apply Or.inl
+    intro ha
+    apply hnnavnb
+    apply Or.inr
+    intro hb
+    apply hnavb
+    exact ⟨ha, hb⟩
   case mpr =>
-    intros u v
-    apply Or.elim u
+    intros hnavnb hab
+    apply Or.elim hnavnb
     case left =>
-      intro x
-      apply @mp a False
-      case f =>
-        exact x
-      case x =>
-        apply And.left
-        exact v
+      intro hna
+      apply hna
+      exact hab.left
     case right =>
-      intro y
-      apply @mp b False
-      case f =>
-        exact y
-      case x =>
-        apply And.right
-        exact v
+      intro hnb
+      apply hnb
+      exact hab.right
 
 theorem dm2 : ¬(a ∨ b) ↔ (¬a ∧ ¬b) := by
   apply Iff.intro
@@ -73,65 +50,58 @@ theorem dm2 : ¬(a ∨ b) ↔ (¬a ∧ ¬b) := by
   case mpr =>
     intro u
     intro v
-    /- match v with -/
-    /-  | Or.inl ha => -/
-    /-    let hna := u.left -/
-    /-    exact hna ha -/
-    /-  | Or.inr hb => -/
-    /-    let hnb := u.right -/
-    /-    exact hnb hb -/
-    apply @mp a False
-    case f =>
-      exact u.left
-    case x =>
-      apply Or.elim v
-      case left =>
-        intro x
-        exact x
-      case right =>
-        intro y
-        apply False.elim
-        apply @mp b False
-        case f =>
-          exact u.right
-        case x =>
-          exact y
+    match v with
+     | Or.inl ha =>
+       let hna := u.left
+       exact hna ha
+     | Or.inr hb =>
+       let hnb := u.right
+       exact hnb hb
 
 theorem dm3 : (¬∀x, p x) ↔ (∃x, ¬p x) := by
   apply Iff.intro
   case mp =>
     intro hnfxpx
-    apply stab
+    apply Classical.stab
     intro hnexnpx
     apply hnfxpx
     intro x
-    apply stab
+    apply Classical.stab
     intro hnpx
-    apply @mp (∃x, ¬p x) False
-    case f =>
-      exact hnexnpx
-    case x =>
-      exact ⟨x, hnpx⟩
+    apply hnexnpx
+    exact ⟨x, hnpx⟩
   case mpr =>
     intro ⟨x, hnpx⟩
-    intros hfxpx
+    intro hfxpx
     let hpx := hfxpx x
     exact hnpx hpx
 
 theorem dm4 : (¬∃x, p x) ↔ (∀x, ¬p x) := by
   apply Iff.intro
   case mp =>
-    intros u x v
-    apply u
-    exact Exists.intro x v
+    intros hexpx x hpx
+    apply hexpx
+    exact ⟨x, hpx⟩
   case mpr =>
-    intros u v
-    apply @mp (∃x, p x) False
-    case f =>
-      intro ⟨x, hpx⟩
-      let hnpx := u x
-      exact hnpx hpx
-    case x =>
-      exact v
+    intro hfxnpx
+    intro ⟨x, hpx⟩
+    let hnpx := hfxnpx x
+    exact hnpx hpx
+
+theorem t4_7 : (¬¬a -> ¬¬b) -> ¬¬(a -> b) := by
+  intro hnnainnb
+  intro hnaib
+  apply hnaib
+  intro ha
+  apply False.elim
+  apply hnnainnb
+  case _ =>
+    intro hna
+    exact hna ha
+  case _ =>
+    intro hb
+    apply hnaib
+    intro _
+    exact hb
 
 end
