@@ -150,10 +150,10 @@ gte = bnot ... lt
 ------------
 
 quotient :: N -> N -> N
-quotient = \m n -> r m Z (\m' p -> cases (lte (mult n m') m) m' p)
+quotient = \m n -> cases (eq n (S Z)) m (r m Z (\m' p -> cases (lte (mult n m') m) m' p))
 
--- >>> (uncurry $ roundabout quotient) <$> [(3, 4), (4, 3), (14, 3), (15, 3), (16, 3)]
--- [0,1,4,5,5]
+-- >>> (uncurry $ roundabout quotient) <$> [(3, 1), (3, 4), (4, 3), (14, 3), (15, 3), (16, 3)]
+-- [3,0,1,4,5,5]
 
 remainder :: N -> N -> N
 remainder = \m n -> minus m (mult (quotient m n) n)
