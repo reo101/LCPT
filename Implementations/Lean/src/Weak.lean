@@ -89,3 +89,40 @@ theorem t4_9_1: (A -> B) ∨ꜝ (A -> C) -> A -> B ∨ꜝ C := by
     apply hnc
     apply hac
     exact ha
+
+theorem t4_9_2: (A ∨ B -> C) -> (A -> C) ∧ (B -> C) := by
+  intro habic
+  apply And.intro
+  case left =>
+    intro ha
+    apply habic
+    apply Or.inl
+    exact ha
+  case right =>
+    intro hb
+    apply habic
+    apply Or.inr
+    exact hb
+
+theorem t4_9_3: (A -> ∃ꜝ x, p x) -> ∃ꜝ x, (A -> p x) := by
+  intro hainfxnpx
+  intro hfxnaipx
+  let hnaipd := hfxnaipx α_is_inhabited.default
+  apply hnaipd
+  intro ha
+  let hnfxnpx := hainfxnpx ha
+  apply False.elim
+  apply hnfxnpx
+  intro x
+  intro hpx
+  let naipx := hfxnaipx x
+  apply naipx
+  intro _
+  exact hpx
+
+theorem t4_9_4: (∃ x, (p x -> B)) -> (∀ x, p x) -> B := by
+  intro ⟨x, hpxib⟩
+  intro hfxpx
+  let hpx := hfxpx x
+  apply hpxib
+  exact hpx
